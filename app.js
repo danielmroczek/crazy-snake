@@ -1,62 +1,63 @@
 /**
  * Created by mroczek on 28-04-2016.
  */
-// Adapted from the following Processing example:
-// http://processing.org/learning/topics/follow3.html
+
+var initialSize = 100;
+var map = new Rectangle(new Point(0,0), initialSize);
+var center = map.getCenter();
 
 // // The amount of points in the path:
-var points = 10;
+var points = 3;
 
 // The distance between the points:
-var length = 10;
+var movingSpeed = 20;
+
+var rotationSpeed = 180;
+var movingVector = new Point(movingSpeed, 0);
 
 var path = new Path({
   strokeColor: '#E4141B',
-  strokeWidth: 5,
-  strokeCap: 'round'
+  strokeWidth: 1,
+  strokeCap: 'round',
+  fullySelected: true
 });
 
-var start = view.center / [10, 1];
+reset();
 
-for (var i = 0; i < points; i++)
-  path.add(start + new Point(i * length, 0));
 
-function onMouseMove(event) {
-  path.firstSegment.point = event.point;
-  for (var i = 0; i < points - 1; i++) {
-    var segment = path.segments[i];
-    var nextSegment = segment.next;
-    var vector = segment.point - nextSegment.point;
-    vector.length = length;
-    nextSegment.point = segment.point - vector;
+function onFrame(event) {
+  // Each frame, change the fill color of the path slightly by
+  // adding 1 to its hue:
+  //path.strokeColor.hue += 1;
+
+  control(event);
+  path.add(path.lastSegment.point + movingVector.multiply(event.delta));
+  // path.simplify();
+  if (!map.contains(path.lastSegment.point)) {
+    reset();
   }
-  path.smooth({ type: 'continuous' });
 }
 
-function onMouseDown(event) {
-  path.fullySelected = true;
-  path.strokeColor = '#e08285';
+function control(event) {
+  var rotation = rotationSpeed * event.delta;
+  if (Key.isDown("left")) {
+    movingVector.angle -= rotation;
+  }
+
+  if (Key.isDown("right")) {
+    movingVector.angle += rotation;
+  }
+
 }
 
-function onMouseUp(event) {
-  path.fullySelected = false;
-  path.strokeColor = '#e4141b';
+function reset() {
+  path.removeSegments();
+  path.add(center);
 }
-var initialSize = 100;
 
 view.setViewSize(initialSize, initialSize);
 
-var point = new Path.Circle({
-  center: view.center,
-  radius: 1,
-  strokeColor: '#E4141B',
-  strokeWidth: 1,
-  strokeCap: 'round'
-});
-
 view.onResize = function(event) {
-  // Whenever the view is resized, move the path to its center:
-  //path.position = view.center;
   view.setZoom(view.getViewSize().getWidth() / initialSize);
-  view.setCenter([50, 50]);
+  view.setCenter(center);
 };
