@@ -10,16 +10,17 @@ var center = map.getCenter();
 var points = 3;
 
 // The distance between the points:
-var movingSpeed = 20;
+var movingSpeed = 15;
 
 var rotationSpeed = 180;
 var movingVector = new Point(movingSpeed, 0);
+var maxSegmentLength = 1;
 
 var path = new Path({
   strokeColor: '#E4141B',
   strokeWidth: 1,
   strokeCap: 'round',
-  fullySelected: true
+  // fullySelected: true
 });
 
 reset();
@@ -31,9 +32,28 @@ function onFrame(event) {
   //path.strokeColor.hue += 1;
 
   control(event);
-  path.add(path.lastSegment.point + movingVector.multiply(event.delta));
-  // path.simplify();
-  if (!map.contains(path.lastSegment.point)) {
+
+  var lastSegment = path.lastSegment;
+  var newPoint = lastSegment.point + movingVector.multiply(event.delta);
+  var hit = project.hitTest(newPoint);
+  if (hit) {
+    console.dir(hit);
+  }
+  if (lastSegment.curve && lastSegment.curve.length < maxSegmentLength) {
+    lastSegment.point = newPoint;
+    //path.simplify();
+  } else {
+    path.add(newPoint);
+
+  }
+
+  path.smooth('continuous');
+
+
+
+
+  //path.simplify(1);
+  if (!map.contains(path.lastSegment.point) || path.getIntersections().length > 0) {
     reset();
   }
 }
@@ -51,7 +71,7 @@ function control(event) {
 }
 
 function reset() {
-  path.removeSegments();
+  path.removeSegments(1);
   path.add(center);
 }
 
