@@ -53,7 +53,8 @@ function onFrame(event) {
 
 
   //path.simplify(1);
-  if (!map.contains(path.lastSegment.point) || path.getIntersections().length > 0) {
+  // || path.getIntersections().length > 0
+  if (!map.contains(path.lastSegment.point) ) {
     reset();
   }
 }
