@@ -1,13 +1,14 @@
 body {
     margin: 0;
-}
-
-canvas[resize] {
-    width: 90vmin;
-    height: 90vmin;
-    margin: 0 auto;
+    background-color: #212121;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
 }
 
 canvas {
-    border: 5vmin solid red;
+    box-sizing: border-box;
+    width: 95vmin;
+    height: 95vmin;
+    border: 2vmin solid #2962FF;
 }
