@@ -1,84 +1,86 @@
-/**
- * Created by mroczek on 28-04-2016.
- */
+// Make paper classes global
+paper.install(window);
 
-var initialSize = 100;
-var map = new Rectangle(new Point(0,0), initialSize);
-var center = map.getCenter();
+window.onload = () => {
+    // Setup the view
+    paper.setup('canvas');
 
-// // The amount of points in the path:
-var points = 3;
+    const initialSize = 100;
+    const map = new Rectangle(new Point(0, 0), initialSize);
+    const center = map.center;
 
-// The distance between the points:
-var movingSpeed = 15;
+    // The amount of points in the path:
+    const points = 3;
 
-var rotationSpeed = 180;
-var movingVector = new Point(movingSpeed, 0);
-var maxSegmentLength = 1;
+    // The distance between the points:
+    const movingSpeed = 15;
 
-var path = new Path({
-  strokeColor: '#E4141B',
-  strokeWidth: 1,
-  strokeCap: 'round',
-  // fullySelected: true
-});
+    const rotationSpeed = 180;
+    const movingVector = new Point(movingSpeed, 0);
+    const maxSegmentLength = 1;
 
-reset();
+    const path = new Path({
+        strokeColor: '#E4141B',
+        strokeWidth: 1,
+        strokeCap: 'round',
+        // fullySelected: true
+    });
 
+    const reset = () => {
+        path.removeSegments(1);
+        path.add(center);
+    };
 
-function onFrame(event) {
-  // Each frame, change the fill color of the path slightly by
-  // adding 1 to its hue:
-  //path.strokeColor.hue += 1;
-
-  control(event);
-
-  var lastSegment = path.lastSegment;
-  var newPoint = lastSegment.point + movingVector.multiply(event.delta);
-  var hit = project.hitTest(newPoint);
-  if (hit) {
-    console.dir(hit);
-  }
-  if (lastSegment.curve && lastSegment.curve.length < maxSegmentLength) {
-    lastSegment.point = newPoint;
-    //path.simplify();
-  } else {
-    path.add(newPoint);
-
-  }
-
-  path.smooth('continuous');
-
-
-
-
-  //path.simplify(1);
-  // || path.getIntersections().length > 0
-  if (!map.contains(path.lastSegment.point) ) {
     reset();
-  }
-}
 
-function control(event) {
-  var rotation = rotationSpeed * event.delta;
-  if (Key.isDown("left")) {
-    movingVector.angle -= rotation;
-  }
+    view.onFrame = (event) => {
+        // Each frame, change the fill color of the path slightly by
+        // adding 1 to its hue:
+        // path.strokeColor.hue += 1;
 
-  if (Key.isDown("right")) {
-    movingVector.angle += rotation;
-  }
+        control(event);
 
-}
+        const lastSegment = path.lastSegment;
+        const newPoint = lastSegment.point.add(movingVector.multiply(event.delta));
+        
+        const hit = project.hitTest(newPoint);
+        if (hit) {
+            console.dir(hit);
+        }
 
-function reset() {
-  path.removeSegments(1);
-  path.add(center);
-}
+        if (lastSegment.curve && lastSegment.curve.length < maxSegmentLength) {
+            lastSegment.point = newPoint;
+            // path.simplify();
+        } else {
+            path.add(newPoint);
+        }
 
-view.setViewSize(initialSize, initialSize);
+        path.smooth({ type: 'continuous' });
 
-view.onResize = function(event) {
-  view.setZoom(view.getViewSize().getWidth() / initialSize);
-  view.setCenter(center);
+        // path.simplify(1);
+        // || path.getIntersections().length > 0
+        if (!map.contains(path.lastSegment.point)) {
+            reset();
+        }
+    };
+
+    const control = (event) => {
+        const rotation = rotationSpeed * event.delta;
+        if (Key.isDown("left")) {
+            movingVector.angle -= rotation;
+        }
+
+        if (Key.isDown("right")) {
+            movingVector.angle += rotation;
+        }
+    };
+
+    // Handle resizing
+    view.onResize = (event) => {
+        view.zoom = view.viewSize.width / initialSize;
+        view.center = center;
+    };
+
+    // Trigger initial resize to set zoom and center correctly
+    view.emit('resize');
 };
