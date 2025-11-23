@@ -1,14 +1,103 @@
+:root {
+    font-family: 'Noto Sans Mono', monospace;
+    color: rgba(255, 255, 255, 0.87);
+    --main-bg-color: #1976D2;
+    --panel-bg-color: #263238;
+    --border-width: 1vmin;
+
+    letter-spacing: .3vmin;
+    font-weight: 600;
+    font-size: 1.5vmin;
+}
+
 body {
     margin: 0;
-    background-color: #212121;
-    min-height: 100dvh;
+    background-color: var(--panel-bg-color);
     display: grid;
     place-items: center;
+    text-transform: uppercase;
+}
+
+.game-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: black;
+    border: var(--border-width) solid var(--main-bg-color); /* shared outer border for HUD + canvas */
+    box-sizing: border-box;
+    overflow: hidden; /* ensure only one visible outer border */
+}
+
+.game-shell {
+    position: relative;
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 canvas {
     box-sizing: border-box;
-    width: 95vmin;
-    height: 95vmin;
-    border: 2vmin solid #2962FF;
+    width: 90vmin;
+    height: 90vmin;
+    aspect-ratio: 1;
+}
+
+.hud {
+    display: flex;
+    justify-content: space-evenly;
+
+    padding: .6rem 1rem;
+    border-bottom: var(--border-width) solid var(--main-bg-color); /* single divider line between HUD and canvas */
+}
+
+.hud-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 4rem;
+}
+
+.hud .label {
+    color: var(--main-bg-color);
+    margin-bottom: 0.15rem;
+}
+
+.hud .value {
+    font-weight: 900;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+}
+
+.panel {
+    background: var(--panel-bg-color);
+    border: .5rem solid var(--main-bg-color);
+    padding: 2rem 3rem;
+    text-align: center;
+    max-width: 26rem;
+}
+
+.panel .title {
+    font-size: 3vmin;
+    margin-top: 0;
+}
+}
+
+.panel .message {
+    margin-bottom: 1rem;
+}
+
+.panel .results p {
+    margin: .5vmin 0;
+}
+
+.panel .prompt {
+    margin-top: 1.5rem;
+    font-weight: 900;
 }
