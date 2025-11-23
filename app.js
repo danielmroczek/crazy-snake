@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'curve-party-best';
+const STORAGE_KEY = 'crazy-snake-best';
 const hudState = {
     state: 'intro',
     score: 0,
