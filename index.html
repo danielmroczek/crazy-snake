@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Crazy Snake</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,7 +45,7 @@
     <div class="game-shell">
       <canvas resize id="canvas"></canvas>
 
-      <div class="overlay" x-show="state !== 'playing'" x-transition.opacity>
+      <div class="overlay" x-show="state !== 'playing'" x-transition.opacity @click="handleOverlayTap($event)">
         <div class="panel">
           <p class="title" x-text="state === 'intro' ? 'Crazy Snake' : 'Game Over'"></p>
           <template x-if="state === 'gameover'">

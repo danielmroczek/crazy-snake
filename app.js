@@ -56,6 +56,11 @@ window.retroGameUI = function retroGameUI() {
                 event.preventDefault();
                 window.gameAPI.requestStart();
             }
+        },
+        handleOverlayTap(event) {
+            if (this.state === 'playing') return;
+            event.preventDefault();
+            window.gameAPI.requestStart();
         }
     };
 };
@@ -89,6 +94,8 @@ window.onload = () => {
     let roundActive = false;
     let applesEaten = 0;
     let elapsed = 0;
+    let touchDirection = 0;
+    let activeTouchId = null;
 
     const readBestFromStorage = () => {
         try {
@@ -198,6 +205,41 @@ window.onload = () => {
         emitHUD();
     };
 
+    const setTouchDirection = (clientX) => {
+        if (typeof clientX !== 'number') {
+            touchDirection = 0;
+            return;
+        }
+        const half = window.innerWidth * 0.5;
+        touchDirection = clientX <= half ? -1 : 1;
+    };
+
+    const clearTouchDirection = () => {
+        activeTouchId = null;
+        touchDirection = 0;
+    };
+
+    const handleTouchPointerDown = (event) => {
+        if (event.pointerType !== 'touch') return;
+        if (activeTouchId === null) {
+            activeTouchId = event.pointerId;
+        }
+        if (activeTouchId !== event.pointerId) return;
+        event.preventDefault();
+        setTouchDirection(event.clientX);
+    };
+
+    const handleTouchPointerMove = (event) => {
+        if (event.pointerType !== 'touch' || event.pointerId !== activeTouchId) return;
+        event.preventDefault();
+        setTouchDirection(event.clientX);
+    };
+
+    const handleTouchPointerEnd = (event) => {
+        if (event.pointerType !== 'touch' || event.pointerId !== activeTouchId) return;
+        clearTouchDirection();
+    };
+
     prepareArena();
     resetStats();
     setState('intro');
@@ -276,7 +318,11 @@ window.onload = () => {
     const control = (event) => {
         const left = paper.Key.isDown("left");
         const right = paper.Key.isDown("right");
-        const dir = left && !right ? -1 : right && !left ? 1 : 0;
+        let dir = left && !right ? -1 : right && !left ? 1 : 0;
+
+        if (dir === 0 && touchDirection !== 0) {
+            dir = touchDirection;
+        }
 
         if (dir === 0) {
             holdDir = 0;
@@ -298,6 +344,11 @@ window.onload = () => {
 
         path.fullySelected = paper.Key.isDown("z");
     };
+
+    window.addEventListener('pointerdown', handleTouchPointerDown, { passive: false });
+    window.addEventListener('pointermove', handleTouchPointerMove, { passive: false });
+    window.addEventListener('pointerup', handleTouchPointerEnd, { passive: false });
+    window.addEventListener('pointercancel', handleTouchPointerEnd, { passive: false });
 
     window.addEventListener('keydown', (e) => {
         const k = e.key && e.key.toLowerCase();
