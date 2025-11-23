@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crazy Snake</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.18/paper-full.min.js"></script>
+  <script src="app.js" defer type="module"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  
+  
+</head>
+<body x-data="retroGameUI()" x-init="init()" @keydown.window="handleKey($event)">
+  <div class="game-layout">
+    <div class="hud">
+      <div class="hud-item">
+        <span class="label">Score</span>
+        <span class="value" x-text="score"></span>
+      </div>
+      <div class="hud-item">
+        <span class="label">Apples</span>
+        <span class="value" x-text="apples"></span>
+      </div>
+      <div class="hud-item">
+        <span class="label">Time</span>
+        <span class="value" x-text="elapsed.toFixed(0)"></span>
+      </div>
+      <div class="hud-item">
+        <span class="label">Best</span>
+        <span class="value" x-text="best"></span>
+      </div>
+      <div class="hud-item">
+        <span class="label">Last</span>
+        <span class="value" x-text="last"></span>
+      </div>
+    </div>
+
+    <div class="game-shell">
+      <canvas resize id="canvas"></canvas>
+
+      <div class="overlay" x-show="state !== 'playing'" x-transition.opacity>
+        <div class="panel">
+          <p class="title" x-text="state === 'intro' ? 'Crazy Snake' : 'Game Over'"></p>
+          <template x-if="state === 'gameover'">
+            <div class="results">
+              <p>Score: <strong x-text="score"></strong></p>
+              <p>Best: <strong x-text="best"></strong></p>
+            </div>
+          </template>
+          <template x-if="state === 'intro'">
+            <p class="message">
+            
+            Starts slow, <br/> speeds up over time.
+            </p>
+            
+          </template>
+          <p class="prompt">Press Space to start</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
